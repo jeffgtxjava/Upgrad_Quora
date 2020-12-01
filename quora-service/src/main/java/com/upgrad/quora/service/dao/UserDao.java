@@ -33,4 +33,10 @@ public class UserDao {
         }
     }
 
+    // create the user in the database
+    public UserEntity createUser(UserEntity userEntity){
+        entityManager.persist(userEntity);
+        return  userEntity;
+    }
+
 }
