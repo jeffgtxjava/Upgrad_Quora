@@ -3,7 +3,10 @@ package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
+import com.upgrad.quora.service.business.SignupBusinessService;
 import com.upgrad.quora.service.entity.UserEntity;
+import com.upgrad.quora.service.exception.SignUpRestrictedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +20,15 @@ import java.util.UUID;
 @RequestMapping(path = "/user")
 public class UserController {
 
+    @Autowired
+    private SignupBusinessService signupBusinessService;
+
 
     // endpoint for signup
 
     @RequestMapping(path = "/signup",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignupUserResponse> signup (final SignupUserRequest signupUserRequest){
+    public ResponseEntity<SignupUserResponse> signup (final SignupUserRequest signupUserRequest) throws SignUpRestrictedException {
 
         // store the user request details
 
@@ -41,8 +47,10 @@ public class UserController {
         userEntity.setRole("nonadmin");
         userEntity.setContactNumber(signupUserRequest.getContactNumber());
 
-        // check with username and email for the existence of it in the database
-        // if these are not unique throw errors accordingly
+        //Create the user in the database
+        final UserEntity createdUserEntity = signupBusinessService.signup(userEntity);
+
+        SignupUserResponse userResponse = new SignupUserResponse().id(createdUserEntity.getUuid()).status("REGISTERED");
 
         //return the success code after the user account get's created successfully
         return new ResponseEntity<SignupUserResponse>(userResponse,HttpStatus.CREATED);
