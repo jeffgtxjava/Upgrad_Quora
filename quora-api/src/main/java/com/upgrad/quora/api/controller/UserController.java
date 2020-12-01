@@ -31,12 +31,12 @@ public class UserController {
         userEntity.setFirstName(signupUserRequest.getFirstName());
         userEntity.setFirstName(signupUserRequest.getFirstName());
         userEntity.setLastName(signupUserRequest.getLastName());
-        userEntity.setUsername(signupUserRequest.getUserName());
+        userEntity.setUserName(signupUserRequest.getUserName());
         userEntity.setEmail(signupUserRequest.getEmailAddress());
         userEntity.setPassword(signupUserRequest.getPassword());
         userEntity.setSalt("abc1234");
         userEntity.setCountry(signupUserRequest.getCountry());
-        userEntity.setAboutme(signupUserRequest.getAboutMe());
+        userEntity.setAboutMe(signupUserRequest.getAboutMe());
         userEntity.setDob(signupUserRequest.getDob());
         userEntity.setRole("nonadmin");
         userEntity.setContactNumber(signupUserRequest.getContactNumber());
