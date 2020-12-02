@@ -16,12 +16,12 @@ import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "user_auth",schema = "quora")
+@Table(name = "user_auth")
 @NamedQueries({
         @NamedQuery(name = "userAuthTokenByAccessToken",query = "select u from UserAuthEntity u where u.accessToken " +
-                "=: accessToken"),
+                "=:accessToken"),
         @NamedQuery(name = "userAuthTokenByUuid",query = "select u from UserAuthEntity u where u.uuid " +
-                "=: uuid")
+                "=:uuid")
 })
 public class UserAuthEntity implements Serializable {
 
@@ -37,8 +37,8 @@ public class UserAuthEntity implements Serializable {
     private String uuid;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @Column(name = "user_id")
     @NotNull
     private UserEntity userId;
 
