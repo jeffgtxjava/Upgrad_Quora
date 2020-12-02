@@ -16,6 +16,10 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "user_auth",schema = "quora")
+@NamedQueries({
+        @NamedQuery(name = "userAuthTokenByAccessToken",query = "select u from UserAuthEntity u wherer u.accessToken " +
+                "=: accessToken")
+})
 public class UserAuthEntity {
 
 
