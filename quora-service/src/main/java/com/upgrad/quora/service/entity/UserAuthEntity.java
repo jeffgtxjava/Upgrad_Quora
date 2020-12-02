@@ -40,7 +40,7 @@ public class UserAuthEntity implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @Column(name = "user_id")
     @NotNull
-    private Integer userId;
+    private UserEntity userId;
 
     @Column(name = "access_token")
     @NotNull
@@ -77,11 +77,11 @@ public class UserAuthEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public Integer getUserId() {
+    public UserEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(UserEntity userId) {
         this.userId = userId;
     }
 
