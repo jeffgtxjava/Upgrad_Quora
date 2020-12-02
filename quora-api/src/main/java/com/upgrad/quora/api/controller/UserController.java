@@ -4,12 +4,15 @@ package com.upgrad.quora.api.controller;
 import com.upgrad.quora.api.model.SigninResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
+import com.upgrad.quora.service.business.AuthenticationService;
 import com.upgrad.quora.service.business.SignupBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
+import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +29,9 @@ public class UserController {
 
     @Autowired
     private SignupBusinessService signupBusinessService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
 
     // endpoint for signup
@@ -60,8 +66,8 @@ public class UserController {
         return new ResponseEntity<SignupUserResponse>(userResponse,HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/singin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") String authorization ) {
+    @RequestMapping(path = "/signin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") String authorization ) throws AuthenticationFailedException {
 
         //splitting the authorization with 'Basic ' in order to retrieve the username:password
         byte[] decode = Base64.decode(authorization.split("Basic ")[1]);
@@ -73,7 +79,15 @@ public class UserController {
         String[] decodedArray  = decodedText.split(":");
 
         //need to check with the existance of the provided user in the database
+        UserAuthEntity userAuthEntity = authenticationService.authenticate(decodedArray[0],decodedArray[1]);
 
+        SigninResponse signinResponse = new SigninResponse();
+
+        signinResponse.setId(userAuthEntity.getUserId().getUuid());
+        signinResponse.setMessage("SIGNED IN SUCCESSFULLY");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("access-token",userAuthEntity.getAccessToken());
 
         return new ResponseEntity<>(signinResponse,headers,HttpStatus.OK);
     }
