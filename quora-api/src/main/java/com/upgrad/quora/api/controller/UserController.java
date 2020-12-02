@@ -2,13 +2,16 @@ package com.upgrad.quora.api.controller;
 
 
 import com.upgrad.quora.api.model.SigninResponse;
+import com.upgrad.quora.api.model.SignoutResponse;
 import com.upgrad.quora.api.model.SignupUserRequest;
 import com.upgrad.quora.api.model.SignupUserResponse;
 import com.upgrad.quora.service.business.AuthenticationService;
+import com.upgrad.quora.service.business.SignoutBusinessService;
 import com.upgrad.quora.service.business.SignupBusinessService;
 import com.upgrad.quora.service.entity.UserAuthEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class UserController {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private SignoutBusinessService signoutBusinessService;
 
 
     // endpoint for signup
@@ -90,6 +96,24 @@ public class UserController {
         headers.add("access-token",userAuthEntity.getAccessToken());
 
         return new ResponseEntity<>(signinResponse,headers,HttpStatus.OK);
+    }
+
+
+
+    //signout method
+
+    @RequestMapping(path = "/signout",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<SignoutResponse> signout(@RequestHeader("access-token")final String accessToken) throws SignOutRestrictedException {
+
+        String[] bearerToken = accessToken.split("Bearer ");
+
+        UserAuthEntity userAuthEntity = signoutBusinessService.signout(bearerToken[1]);
+
+        SignoutResponse signoutResponse = new SignoutResponse();
+        signoutResponse.setId(userAuthEntity.getUuid());
+        signoutResponse.setMessage("SIGNED OUT SUCCESSFULLY");
+
+        return new ResponseEntity<>(signoutResponse,HttpStatus.OK);
     }
 
 }
