@@ -11,16 +11,19 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "user_auth",schema = "quora")
 @NamedQueries({
-        @NamedQuery(name = "userAuthTokenByAccessToken",query = "select u from UserAuthEntity u wherer u.accessToken " +
-                "=: accessToken")
+        @NamedQuery(name = "userAuthTokenByAccessToken",query = "select u from UserAuthEntity u where u.accessToken " +
+                "=: accessToken"),
+        @NamedQuery(name = "userAuthTokenByUuid",query = "select u from UserAuthEntity u where u.uuid " +
+                "=: uuid")
 })
-public class UserAuthEntity {
+public class UserAuthEntity implements Serializable {
 
 
     @Id
