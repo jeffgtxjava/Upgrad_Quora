@@ -34,6 +34,15 @@ public class UserDao {
         }
     }
 
+    // get the user from the email
+    public UserEntity getUserByUuid(final String uuid) {
+        try {
+            return entityManager.createNamedQuery("userByUuid",UserEntity.class).setParameter("uuid",uuid).getSingleResult();
+        }catch (NoResultException nre) {
+            return null;
+        }
+    }
+
     // create the user in the database
     public UserEntity createUser(UserEntity userEntity){
         entityManager.persist(userEntity);
