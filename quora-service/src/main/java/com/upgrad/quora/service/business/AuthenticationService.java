@@ -29,7 +29,7 @@ public class AuthenticationService {
 
         //checking whether user dowes exist in the DB else throw not exist error
         if(userEntity == null) {
-            throw new AuthenticationFailedException("'ATH-001","This username does not exist");
+            throw new AuthenticationFailedException("ATH-001","This username does not exist");
         }
 
         // compare the input password from the password in the DB if it doesn't exist throw passwords doesn't match
@@ -67,6 +67,7 @@ public class AuthenticationService {
         if(uaeByUuid == null) {
             userDao.createAuthToken(userAuthEntity);
         } else {
+            userAuthEntity.setId(uaeByUuid.getId());
             userDao.updateAuthToken(userAuthEntity);
         }
 

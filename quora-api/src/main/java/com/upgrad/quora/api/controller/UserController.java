@@ -13,7 +13,6 @@ import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
-import org.postgresql.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Base64;
 import java.util.UUID;
 
 @RestController
@@ -75,7 +75,7 @@ public class UserController {
     public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") String authorization ) throws AuthenticationFailedException {
 
         //splitting the authorization with 'Basic ' in order to retrieve the username:password
-        byte[] decode = Base64.decode(authorization.split("Basic ")[1]);
+        byte[] decode = Base64.getDecoder().decode(authorization.split("Basic ")[1]);
 
         //converting the decoded byte to string
         String decodedText = new String(decode);
