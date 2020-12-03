@@ -27,9 +27,11 @@ public class UserAdminBusinessService {
         }
 
         final ZonedDateTime now = ZonedDateTime.now();
-        int temp  = now.compareTo(userAuthEntity.getLogoutAt());
-        if(now.compareTo(userAuthEntity.getLogoutAt()) >=0 || userAuthEntity.getLogoutAt() != null ) {
-            throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get user details");
+
+        if(userAuthEntity.getLogoutAt() != null) {
+            if(now.compareTo(userAuthEntity.getLogoutAt()) >=0  ||now.compareTo(userAuthEntity.getExpiresAt())>0 ) {
+                throw new AuthorizationFailedException("ATHR-002","User is signed out.Sign in first to get user details");
+            }
         }
 
         UserAuthEntity userAuthEntity1 = userDao.getUserAuthTokenByUuid(userUuid);

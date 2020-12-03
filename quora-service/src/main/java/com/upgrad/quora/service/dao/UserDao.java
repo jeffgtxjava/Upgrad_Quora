@@ -37,7 +37,7 @@ public class UserDao {
     // get the user from the Uuid
     public UserEntity getUserByUuid(final String uuid) {
         try {
-            return entityManager.createNamedQuery("userByUuid",UserEntity.class).setParameter("uuid",uuid).getSingleResult();
+            return entityManager.createNamedQuery("userByUserId",UserEntity.class).setParameter("uuid",uuid).getSingleResult();
         }catch (NoResultException nre) {
             return null;
         }

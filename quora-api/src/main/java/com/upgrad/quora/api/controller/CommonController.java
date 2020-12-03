@@ -22,18 +22,18 @@ public class CommonController {
                                                                    @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, UserNotFoundException {
 
         String[] basicToken = authorization.split("Bearer ");
-        final UserEntity userEntity= userAdminBusinessService.getUser(userUuid,basicToken[1]);
+        final UserEntity requestedUserEntity= userAdminBusinessService.getUser(userUuid,basicToken[1]);
 
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
 
-        userDetailsResponse.setFirstName(userEntity.getFirstName());
-        userDetailsResponse.setLastName((userEntity.getLastName()));
-        userDetailsResponse.setUserName(userEntity.getUserName());
-        userDetailsResponse.setEmailAddress(userEntity.getEmail());
-        userDetailsResponse.setDob(userEntity.getDob());
-        userDetailsResponse.setCountry(userEntity.getCountry());
-        userDetailsResponse.setContactNumber(userEntity.getContactNumber());
-        userDetailsResponse.setAboutMe(userEntity.getAboutMe());
+        userDetailsResponse.setFirstName(requestedUserEntity.getFirstName());
+        userDetailsResponse.setLastName((requestedUserEntity.getLastName()));
+        userDetailsResponse.setUserName(requestedUserEntity.getUserName());
+        userDetailsResponse.setEmailAddress(requestedUserEntity.getEmail());
+        userDetailsResponse.setDob(requestedUserEntity.getDob());
+        userDetailsResponse.setCountry(requestedUserEntity.getCountry());
+        userDetailsResponse.setContactNumber(requestedUserEntity.getContactNumber());
+        userDetailsResponse.setAboutMe(requestedUserEntity.getAboutMe());
 
         return new ResponseEntity<>(userDetailsResponse, HttpStatus.OK);
     }
