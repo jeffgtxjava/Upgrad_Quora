@@ -34,7 +34,7 @@ public class UserDao {
         }
     }
 
-    // get the user from the email
+    // get the user from the Uuid
     public UserEntity getUserByUuid(final String uuid) {
         try {
             return entityManager.createNamedQuery("userByUuid",UserEntity.class).setParameter("uuid",uuid).getSingleResult();
@@ -79,5 +79,15 @@ public class UserDao {
             return  null;
         }
     }
+
+
+    // delete a user from the DB
+    public String deleteUser(final UserEntity ue ) {
+        String uuid = ue.getUuid();
+        entityManager.remove(ue);
+        return uuid;
+    }
+
+
 
 }
