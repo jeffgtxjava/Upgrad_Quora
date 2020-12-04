@@ -1,3 +1,5 @@
+
+
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.UserDeleteResponse;
@@ -25,15 +27,14 @@ public class AdminController {
     @RequestMapping(path = "/admin/user/{userId}",method = RequestMethod.DELETE,produces =
             MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UserDeleteResponse> deleteUserByUuid(@PathVariable("userId") String uuid, @RequestHeader(
-            "access-token") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
+            "authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
 
         String[] bearerToken = accessToken.split("Bearer ");
 
-        final UserEntity userToDelete = userAdminBusinessService.getUser(uuid,bearerToken[1]);
-        final UserEntity loggedUserEntity = userDeleteBusinessService.getUserEntityByAuthToken(bearerToken[1]);
+        final UserEntity adminLoginUserEntity = userDeleteBusinessService.getUserEntityByAdminCheck(bearerToken[1]);
+        final UserEntity userToDelete = userDeleteBusinessService.getUserToDelete(uuid,bearerToken[1]);
 
-
-        String deletedUuid = userDeleteBusinessService.deleteUserByUuid(loggedUserEntity,userToDelete);
+        String deletedUuid = userDeleteBusinessService.deleteUserByUuid(adminLoginUserEntity,userToDelete);
 
         UserDeleteResponse userDeleteResponse = new UserDeleteResponse().id(deletedUuid).status("USER " +
                 "SUCCESSFULLY DELETED");

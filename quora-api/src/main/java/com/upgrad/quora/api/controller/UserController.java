@@ -92,7 +92,7 @@ public class UserController {
         signinResponse.setMessage("SIGNED IN SUCCESSFULLY");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("access-token",userAuthEntity.getAccessToken());
+        headers.add("authorization",userAuthEntity.getAccessToken());
 
         return new ResponseEntity<>(signinResponse,headers,HttpStatus.OK);
     }
@@ -102,7 +102,7 @@ public class UserController {
     //signout method
 
     @RequestMapping(path = "/signout",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SignoutResponse> signout(@RequestHeader("access-token")final String accessToken) throws SignOutRestrictedException {
+    public ResponseEntity<SignoutResponse> signout(@RequestHeader("authorization")final String accessToken) throws SignOutRestrictedException {
 
         String[] bearerToken = accessToken.split("Bearer ");
 
