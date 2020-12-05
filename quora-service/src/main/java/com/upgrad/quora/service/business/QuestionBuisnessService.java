@@ -30,7 +30,7 @@ public class QuestionBusinessService {
     UserBusinessService userBusinessService;
 
 
-
+//this method checks if the user is signed in or not to post a question
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity postQuestion(final QuestionEntity questionEntity, final String accessToken) throws AuthorizationFailedException{
         UserAuthTokenEntity userAuthToken = userDao.getUserAuthToken(accessToken);
@@ -45,7 +45,7 @@ public class QuestionBusinessService {
         return questionDao.persistQuestion(questionEntity);
     }
 
-
+//this method checks if the user is signed in or not toview all the question
     public List<QuestionEntity> getAllQuestions(final String accessToken) throws AuthorizationFailedException {
         UserAuthTokenEntity userAuthToken = userDao.getUserAuthToken(accessToken);
         if(userAuthToken == null) {
@@ -60,7 +60,7 @@ public class QuestionBusinessService {
 
 
 
-
+//this method checks if the user is signed in or not and if the user is a admin to delete a question content
     @Transactional(propagation = Propagation.REQUIRED)
     public String deleteQuestion(final String questionUuid, final String accessToken) throws AuthorizationFailedException, InvalidQuestionException {
         UserAuthTokenEntity userAuthToken = userDao.getUserAuthToken(accessToken);
@@ -92,7 +92,7 @@ public class QuestionBusinessService {
 
         return questionUuid;
     }
-
+//this method checks if the enetered question content exists or not
 
     public QuestionEntity getQuestion(final String questionUuid, final String accessToken) throws InvalidQuestionException{
 
@@ -104,7 +104,7 @@ public class QuestionBusinessService {
 
     }
 
-
+    //this method checks if the user is signed in or not and if the user is a admin to edit  a question content
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity editQuestion(final QuestionEntity questionEntity, final String accessToken) throws AuthorizationFailedException {
         UserAuthTokenEntity userAuthToken = userDao.getUserAuthToken(accessToken);
@@ -130,7 +130,7 @@ public class QuestionBusinessService {
 
     }
 
-
+    //this method checks if the user is signed in or not and the returns the all the question posted by a user
     public List<QuestionEntity> getAllQuestionsByUser(final String accessToken, String userUuid) throws AuthorizationFailedException, UserNotFoundException {
         UserAuthTokenEntity userAuthToken = userDao.getUserAuthToken(accessToken);
         if (userAuthToken == null) {

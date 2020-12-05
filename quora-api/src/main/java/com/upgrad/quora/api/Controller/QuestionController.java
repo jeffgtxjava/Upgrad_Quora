@@ -25,7 +25,7 @@ public class QuestionController {
     QuestionBusinessService questionBusinessService;
 
 
-
+//the method is used to create the question and checks the authorization
     @RequestMapping(method = RequestMethod.POST, path ="/question/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
       public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
        final  QuestionEntity questionEntity = new QuestionEntity();
@@ -47,7 +47,7 @@ public class QuestionController {
         return new ResponseEntity<QuestionResponse>(questionResponse, HttpStatus.CREATED);
     }
 
-
+//this methods gets all the question
     @RequestMapping(method = RequestMethod.GET, path ="/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException{
         List<QuestionEntity> listOfQuestions = new ArrayList<>();
@@ -71,7 +71,7 @@ public class QuestionController {
     }
 
 
-
+//this method is used to delete a question
     @RequestMapping(method = RequestMethod.DELETE, path = "/question/delete/{questionId}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionDeleteResponse> deleteQuestion(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization)throws AuthorizationFailedException, InvalidQuestionException {
         String uuid ;
@@ -88,7 +88,7 @@ public class QuestionController {
 
 
 
-
+//this method is used to edit the content of the question  and only the question author can edit the contents
     @RequestMapping(method = RequestMethod.PUT, path = "/question/edit/{questionId}", consumes= MediaType.APPLICATION_JSON_UTF8_VALUE, produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<QuestionEditResponse> editQuestionContent(@PathVariable("questionId") final String questionUuid, @RequestHeader("authorization") final String authorization, final QuestionEditRequest editRequest) throws AuthorizationFailedException,InvalidQuestionException {
         QuestionEntity questionEntity;
@@ -114,7 +114,7 @@ public class QuestionController {
 
 
 
-
+//this method gets all the question posted by a userId
     @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(@RequestHeader("authorization") final String authorization, @PathVariable ("userId") final String userUuid) throws AuthorizationFailedException, UserNotFoundException {
         List<QuestionEntity> listOfUserQuestions = new ArrayList<>();
