@@ -29,10 +29,8 @@ public class AdminController {
     public ResponseEntity<UserDeleteResponse> deleteUserByUuid(@PathVariable("userId") String uuid, @RequestHeader(
             "authorization") String accessToken) throws AuthorizationFailedException, UserNotFoundException {
 
-        String[] bearerToken = accessToken.split("Bearer ");
-
-        final UserEntity adminLoginUserEntity = userDeleteBusinessService.getUserEntityByAdminCheck(bearerToken[1]);
-        final UserEntity userToDelete = userDeleteBusinessService.getUserToDelete(uuid,bearerToken[1]);
+        final UserEntity adminLoginUserEntity = userDeleteBusinessService.getUserEntityByAdminCheck(accessToken);
+        final UserEntity userToDelete = userDeleteBusinessService.getUserToDelete(uuid,accessToken);
 
         String deletedUuid = userDeleteBusinessService.deleteUserByUuid(adminLoginUserEntity,userToDelete);
 
