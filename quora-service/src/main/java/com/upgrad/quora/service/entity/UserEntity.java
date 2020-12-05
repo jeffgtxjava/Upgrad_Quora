@@ -15,9 +15,9 @@ import java.io.Serializable;
 @Table(name = "users")
 @NamedQueries(
         {
-                @NamedQuery(name = "userByUsername",query = "select u from UserEntity u where u.userName =:username"),
-                @NamedQuery(name = "userByEmail",query = "select u from UserEntity u where u.email =:email"),
-                @NamedQuery(name = "userByUserId",query = "select u from UserEntity u where u.uuid =:uuid")
+                @NamedQuery(name = "userByUsername", query = "select u from UserEntity u where u.userName =:username"),
+                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "userByUserId", query = "select u from UserEntity u where u.uuid =:uuid")
         }
 )
 public class UserEntity implements Serializable {
@@ -42,13 +42,13 @@ public class UserEntity implements Serializable {
     @NotNull
     private String lastName;
 
-    @Column(name = "username",unique = true)
+    @Column(name = "username", unique = true)
     @Size(max = 30)
     @NotNull
     private String userName;
 
 
-    @Column(name = "email",unique = true)
+    @Column(name = "email", unique = true)
     @Size(max = 50)
     @NotNull
     private String email;

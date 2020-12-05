@@ -27,11 +27,11 @@ public class SignupBusinessService {
 
         //check for the existence of the user wrt username and email
 
-        if(userDao.getUserByUsername(userEntity.getUserName()) != null) {
-            throw new SignUpRestrictedException("SGR-001","Try any other Username, this Username has already been " +
+        if (userDao.getUserByUsername(userEntity.getUserName()) != null) {
+            throw new SignUpRestrictedException("SGR-001", "Try any other Username, this Username has already been " +
                     "taken");
-        } else if (userDao.getUserByEmail(userEntity.getEmail()) !=null) {
-            throw new SignUpRestrictedException("SGR-002","This user has already been registered, try with any other emailId");
+        } else if (userDao.getUserByEmail(userEntity.getEmail()) != null) {
+            throw new SignUpRestrictedException("SGR-002", "This user has already been registered, try with any other emailId");
 
         } else {
             return userDao.createUser(userEntity);

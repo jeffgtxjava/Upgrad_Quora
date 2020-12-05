@@ -9,7 +9,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -19,9 +18,9 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "user_auth")
 @NamedQueries({
-        @NamedQuery(name = "userAuthTokenByAccessToken",query = "select u from UserAuthEntity u where u.accessToken " +
+        @NamedQuery(name = "userAuthTokenByAccessToken", query = "select u from UserAuthEntity u where u.accessToken " +
                 "=:accessToken"),
-        @NamedQuery(name = "userAuthTokenByUuid",query = "select u from UserAuthEntity u where u.uuid " +
+        @NamedQuery(name = "userAuthTokenByUuid", query = "select u from UserAuthEntity u where u.uuid " +
                 "=:uuid")
 })
 public class UserAuthEntity implements Serializable {
@@ -45,7 +44,7 @@ public class UserAuthEntity implements Serializable {
 
     @Column(name = "access_token")
     @NotNull
-    @Size(max =500)
+    @Size(max = 500)
     private String accessToken;
 
 

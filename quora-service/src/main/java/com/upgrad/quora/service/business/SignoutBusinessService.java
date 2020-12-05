@@ -21,13 +21,13 @@ public class SignoutBusinessService {
 
         UserAuthEntity userAuthEntity = userDao.getUserAuthToken(accessToken);
 
-        if(userAuthEntity == null) {
-            throw new SignOutRestrictedException("SGR-001","User is not Signed in");
+        if (userAuthEntity == null) {
+            throw new SignOutRestrictedException("SGR-001", "User is not Signed in");
         }
 
         final ZonedDateTime now = ZonedDateTime.now();
         userAuthEntity.setLogoutAt(now);
-
+        userDao.updateAuthToken(userAuthEntity);
         return userAuthEntity;
     }
 

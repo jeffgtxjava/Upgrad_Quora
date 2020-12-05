@@ -28,16 +28,16 @@ public class AuthenticationService {
         UserEntity userEntity = userDao.getUserByUsername(username);
 
         //checking whether user dowes exist in the DB else throw not exist error
-        if(userEntity == null) {
-            throw new AuthenticationFailedException("ATH-001","This username does not exist");
+        if (userEntity == null) {
+            throw new AuthenticationFailedException("ATH-001", "This username does not exist");
         }
 
         // compare the input password from the password in the DB if it doesn't exist throw passwords doesn't match
-        final String encryptedPassword = passwordCryptographyProvider.encrypt(password,userEntity.getSalt());
+        final String encryptedPassword = passwordCryptographyProvider.encrypt(password, userEntity.getSalt());
 
 
-        if(!(encryptedPassword.equals(userEntity.getPassword()))) {
-            throw new AuthenticationFailedException("ATH-002","Password failed");
+        if (!(encryptedPassword.equals(userEntity.getPassword()))) {
+            throw new AuthenticationFailedException("ATH-002", "Password failed");
         }
 
 
@@ -59,12 +59,12 @@ public class AuthenticationService {
         final ZonedDateTime now = ZonedDateTime.now();
         final ZonedDateTime expires = now.plusHours(8);
 
-        userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(userEntity.getUuid(),now,expires));
+        userAuthEntity.setAccessToken(jwtTokenProvider.generateToken(userEntity.getUuid(), now, expires));
 
         userAuthEntity.setLoginAt(now);
         userAuthEntity.setExpiresAt(expires);
 
-        if(uaeByUuid == null) {
+        if (uaeByUuid == null) {
             userDao.createAuthToken(userAuthEntity);
         } else {
             userAuthEntity.setId(uaeByUuid.getId());
