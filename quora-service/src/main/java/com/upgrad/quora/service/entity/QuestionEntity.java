@@ -1,7 +1,9 @@
 package com.upgrad.quora.service.entity;
 
+
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,22 +13,25 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "ANSWER")
+@Table(name = "QUESTION")
 @NamedQueries({
-    @NamedQuery(name = "getAnswerByUuid", query = "select ans from AnswerEntity ans where ans.uuid = :uuid"),
-    @NamedQuery(name = "getAllAnswersToQuestion", query = "select ans from AnswerEntity ans where questionEntity.uuid = :uuid")
+
+    @NamedQuery(name = "questionByUuid", query = "select q from QuestionEntity q where q.uuid = :uuid "),
+    @NamedQuery(name = "listofAllQuestions", query = "select q from QuestionEntity q "),
+    @NamedQuery(name = "allQuestionsByUser", query = "SELECT q FROM QuestionEntity q JOIN q.userEntity u WHERE u.uuid = :uuid")
+
 })
-public class AnswerEntity implements Serializable {
+public class QuestionEntity implements Serializable {
 
   @Id
   @Column(name = "ID")
@@ -34,28 +39,26 @@ public class AnswerEntity implements Serializable {
   private Integer id;
 
   @Column(name = "UUID")
-  @Size(max = 200)
   @NotNull
+  @Size(max = 200)
   private String uuid;
 
-  @Column(name = "ANS")
-  @Size(max = 255)
+  @Column(name = "CONTENT")
   @NotNull
-  private String answer;
+  @Size(max = 500)
+  private String content;
+
+  @ManyToOne
+  @JoinColumn(name = "USER_ID")
+  private UserEntity userEntity;
+
+  @OneToMany(mappedBy = "questionEntity")
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private List<AnswerEntity> answerEntityList;
 
   @Column(name = "DATE")
   @NotNull
   private ZonedDateTime date;
-
-  @ManyToOne
-  @JoinColumn(name = "USER_ID")
-  @NotNull
-  private UserEntity userEntity;
-
-  @ManyToOne
-  @JoinColumn(name = "QUESTION_ID")
-  @NotNull
-  private QuestionEntity questionEntity;
 
   public Integer getId() {
     return id;
@@ -73,12 +76,12 @@ public class AnswerEntity implements Serializable {
     this.uuid = uuid;
   }
 
-  public String getAnswer() {
-    return answer;
+  public String getContent() {
+    return content;
   }
 
-  public void setAnswer(String answer) {
-    this.answer = answer;
+  public void setContent(String content) {
+    this.content = content;
   }
 
   public ZonedDateTime getDate() {
@@ -90,19 +93,19 @@ public class AnswerEntity implements Serializable {
   }
 
   public UserEntity getUserEntity() {
-    return userEntity;
+    return this.userEntity;
   }
 
   public void setUserEntity(UserEntity userEntity) {
     this.userEntity = userEntity;
   }
 
-  public QuestionEntity getQuestionEntity() {
-    return questionEntity;
+  public List<AnswerEntity> getAnswerEntityList() {
+    return answerEntityList;
   }
 
-  public void setQuestionEntity(QuestionEntity questionEntity) {
-    this.questionEntity = questionEntity;
+  public void setAnswerEntityList(List<AnswerEntity> answerEntityList) {
+    this.answerEntityList = answerEntityList;
   }
 
   @Override
@@ -115,9 +118,8 @@ public class AnswerEntity implements Serializable {
     return new HashCodeBuilder().append(this).hashCode();
   }
 
-  @Override
+  /*@Override
   public String toString() {
     return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
-
+  }*/
 }

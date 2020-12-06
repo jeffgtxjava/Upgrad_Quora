@@ -7,11 +7,17 @@ import com.upgrad.quora.api.model.AnswerEditResponse;
 import com.upgrad.quora.api.model.AnswerRequest;
 import com.upgrad.quora.api.model.AnswerResponse;
 import com.upgrad.quora.service.business.AnswerService;
+import com.upgrad.quora.service.business.AuthorizationService;
+import com.upgrad.quora.service.business.QuestionService;
 import com.upgrad.quora.service.entity.AnswerEntity;
+import com.upgrad.quora.service.entity.QuestionEntity;
+import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.DatabaseException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +38,11 @@ public class AnswerController {
   @Autowired
   public AnswerService answerService;
 
-  //TODO Add questionService object
-  //@Autowired
-  //public QuestionService questionService;
+  @Autowired
+  public AuthorizationService authorizationService;
+
+  @Autowired
+  public QuestionService questionService;
 
   /**
    * Adds a new answer to an existing question. A POST request. Throws "InvalidQuestionException" if
@@ -53,18 +61,19 @@ public class AnswerController {
   public ResponseEntity<AnswerResponse> createAnswer(
       @RequestHeader("authorization") final String accessToken,
       @PathVariable("questionId") String questionUuid,
-      AnswerRequest answerRequest) throws InvalidQuestionException, AuthorizationFailedException {
+      AnswerRequest answerRequest)
+      throws InvalidQuestionException, AuthorizationFailedException, DatabaseException {
 
     final AnswerEntity answerEntity = new AnswerEntity();
     answerEntity.setUuid(UUID.randomUUID().toString());
     answerEntity.setAnswer(answerRequest.getAnswer());
     answerEntity.setDate(ZonedDateTime.now());
 
-    //TODO Add implementation of JWT authorization check
+    UserEntity loggedInUserEntity = authorizationService.validateJWTToken(accessToken);
+    QuestionEntity questionEntity = questionService.getQuestion(questionUuid);
 
-    //TODO Add implementation of validating question uuid
-    //QuestionEntity questionEntity = questionService.getQuestion(questionUuid);
-    //answerEntity.setQuestionEntity(questionEntity);
+    answerEntity.setQuestionEntity(questionEntity);
+    answerEntity.setUserEntity(loggedInUserEntity);
 
     final AnswerEntity createdAnswerEntity = answerService.createAnswer(answerEntity);
     AnswerResponse answerResponse = new AnswerResponse().id(createdAnswerEntity.getUuid())
@@ -94,14 +103,14 @@ public class AnswerController {
       AnswerEditRequest answerEditRequest)
       throws AnswerNotFoundException, AuthorizationFailedException {
 
-    final AnswerEntity answerEntity = new AnswerEntity();
-    answerEntity.setUuid(answerUuid);
-    answerEntity.setAnswer(answerEditRequest.getContent());
+    UserEntity loggedInUserEntity = authorizationService.validateJWTToken(accessToken);
 
-    //TODO Add implementation of JWT authorization check
+    final AnswerEntity answerToEdit = new AnswerEntity();
+    answerToEdit.setUuid(answerUuid);
+    answerToEdit.setAnswer(answerEditRequest.getContent());
+    answerToEdit.setUserEntity(loggedInUserEntity);
 
-    //TODO Send userEntity from the token as parameter to check if answer owner is editing or not
-    final AnswerEntity createdAnswerEntity = answerService.editAnswerContent(answerEntity);
+    final AnswerEntity createdAnswerEntity = answerService.editAnswerContent(answerToEdit);
     AnswerEditResponse answerEditResponse = new AnswerEditResponse()
         .id(createdAnswerEntity.getUuid())
         .status("ANSWER EDITED");
@@ -123,18 +132,19 @@ public class AnswerController {
    * @throws AnswerNotFoundException
    * @throws AuthorizationFailedException
    */
-  @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<AnswerDeleteResponse> deleteAnswer(
       @RequestHeader("authorization") final String accessToken,
       @PathVariable("answerId") String answerUuid)
       throws AnswerNotFoundException, AuthorizationFailedException {
 
-    final AnswerEntity answerEntity = new AnswerEntity();
-    answerEntity.setUuid(answerUuid);
+    UserEntity loggedInUserEntity = authorizationService.validateJWTToken(accessToken);
 
-    //TODO Add implementation of JWT authorization check
+    final AnswerEntity answerToDelete = new AnswerEntity();
+    answerToDelete.setUuid(answerUuid);
+    answerToDelete.setUserEntity(loggedInUserEntity);
 
-    final AnswerEntity deletedAnswerEntity = answerService.deleteAnswer(answerUuid);
+    final AnswerEntity deletedAnswerEntity = answerService.deleteAnswer(answerToDelete);
     AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse()
         .id(deletedAnswerEntity.getUuid())
         .status("ANSWER DELETED");
@@ -154,31 +164,28 @@ public class AnswerController {
    * @throws InvalidQuestionException
    * @throws AuthorizationFailedException
    */
-  @RequestMapping(method = RequestMethod.GET, path = "/answer/all/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public ResponseEntity<AnswerDetailsResponse> getAllAnswersToQuestion(
+  @RequestMapping(method = RequestMethod.GET, path = "/answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion(
       @RequestHeader("authorization") final String accessToken,
-      @PathVariable("questionId") String questionUuid,
-      AnswerEditRequest answerEditRequest)
-      throws InvalidQuestionException, AuthorizationFailedException {
+      @PathVariable("questionId") String questionUuid
+  )
+      throws InvalidQuestionException, AuthorizationFailedException, DatabaseException {
 
-    //TODO Add implementation of JWT authorization check
-
-    //TODO Add implementation of validating question uuid
-    //QuestionEntity questionEntity = questionService.getQuestion(questionUuid);
-    //answerEntity.setQuestionEntity(questionEntity);
+    authorizationService.validateJWTToken(accessToken);
+    QuestionEntity questionEntity = questionService.getQuestion(questionUuid);
 
     final List<AnswerEntity> answerEntityList = answerService.getAllAnswersToQuestion(questionUuid);
 
-    StringBuilder answerContent = new StringBuilder();
+    List<AnswerDetailsResponse> answerDetailsResponses = new ArrayList<>();
     for (AnswerEntity answerEntity : answerEntityList) {
-      answerContent.append(answerEntity.getAnswer() + "\n");
+      AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
+      answerDetailsResponse.setId(answerEntity.getUuid());
+      answerDetailsResponse.setQuestionContent(questionEntity.getContent());
+      answerDetailsResponse.setAnswerContent(answerEntity.getAnswer());
+      answerDetailsResponses.add(answerDetailsResponse);
     }
 
-    //TODO Correct the response value
-    final AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse().id("")
-        .questionContent("").answerContent(answerContent.toString());
-
-    return new ResponseEntity<>(answerDetailsResponse, HttpStatus.OK);
+    return new ResponseEntity<>(answerDetailsResponses, HttpStatus.OK);
 
   }
 }

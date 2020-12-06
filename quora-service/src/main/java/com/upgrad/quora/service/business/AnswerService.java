@@ -30,20 +30,22 @@ public class AnswerService {
   /**
    * Edit an existing answer but only by answer owner.
    *
-   * @param answerEntity
+   * @param answerToEdit
    * @return edited answer entity
    * @throws AnswerNotFoundException
    * @throws AuthorizationFailedException
    */
   @Transactional(propagation = Propagation.REQUIRED)
-  public AnswerEntity editAnswerContent(AnswerEntity answerEntity)
+  public AnswerEntity editAnswerContent(AnswerEntity answerToEdit)
       throws AnswerNotFoundException, AuthorizationFailedException {
-    AnswerEntity existingAnswerEntity = getAnswer(answerEntity.getUuid());
-    //TODO Check if answer owner is same as logged in user
-    /*if(!existingAnswerEntity.getUserEntity().getUuid().equals(answerEntity.getUserEntity().getUuid())){
-      throw new AuthorizationFailedException("ANS-003", "Only the answer owner can edit the answer");
-    }*/
-    return answerDAO.editAnswerContent(answerEntity);
+    AnswerEntity existingAnswerEntity = getAnswer(answerToEdit.getUuid());
+    if (!existingAnswerEntity.getUserEntity().getUuid()
+        .equals(answerToEdit.getUserEntity().getUuid())) {
+      throw new AuthorizationFailedException("ANS-003",
+          "Only the answer owner can edit the answer");
+    }
+    existingAnswerEntity.setAnswer(answerToEdit.getAnswer());
+    return answerDAO.editAnswerContent(existingAnswerEntity);
   }
 
   /**
@@ -53,7 +55,7 @@ public class AnswerService {
    * @return answer entity
    * @throws AnswerNotFoundException
    */
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRED)
   public AnswerEntity getAnswer(String answerUuid) throws AnswerNotFoundException {
     AnswerEntity answerEntity = answerDAO.getAnswer(answerUuid);
     if (answerEntity == null) {
@@ -65,20 +67,22 @@ public class AnswerService {
   /**
    * Delete an answer by UUID
    *
-   * @param answerUuid answer UUID
+   * @param answerToDelete answer UUID along with logged in user details
    * @return deleted answer entity
    * @throws AnswerNotFoundException
    */
   @Transactional(propagation = Propagation.REQUIRED)
-  public AnswerEntity deleteAnswer(String answerUuid) throws AnswerNotFoundException {
-    AnswerEntity answerEntity = getAnswer(answerUuid);
-    //TODO Check if answer owner is same as logged in user
-    /*if(!existingAnswerEntity.getUserEntity().getUuid().equals(answerEntity.getUserEntity().getUuid())){
-      throw new AuthorizationFailedException("ANS-003", "Only the answer owner can edit the answer");
-    }*/
-    //TODO Check if logged in user has admin role
-    answerDAO.deleteAnswer(answerEntity);
-    return answerEntity;
+  public AnswerEntity deleteAnswer(AnswerEntity answerToDelete)
+      throws AnswerNotFoundException, AuthorizationFailedException {
+    AnswerEntity existingAnswerEntity = getAnswer(answerToDelete.getUuid());
+    if (!existingAnswerEntity.getUserEntity().getUuid()
+        .equals(answerToDelete.getUserEntity().getUuid()) || answerToDelete.getUserEntity()
+        .getRole().equals("admin")) {
+      throw new AuthorizationFailedException("ANS-003",
+          "Only the answer owner or admin can delete the answer");
+    }
+    answerDAO.deleteAnswer(existingAnswerEntity);
+    return existingAnswerEntity;
   }
 
   /**
@@ -87,7 +91,7 @@ public class AnswerService {
    * @param questionUuid question UUID
    * @return list of all answer entities
    */
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRED)
   public List<AnswerEntity> getAllAnswersToQuestion(String questionUuid) {
     return answerDAO.getAllAnswers(questionUuid);
   }
