@@ -16,6 +16,12 @@ public class SignoutBusinessService {
     @Autowired
     private UserDao userDao;
 
+    /**
+     * to make the signout of the provided access-token from the headers
+     * @param accessToken
+     * @return
+     * @throws SignOutRestrictedException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserAuthEntity signout(String accessToken) throws SignOutRestrictedException {
 

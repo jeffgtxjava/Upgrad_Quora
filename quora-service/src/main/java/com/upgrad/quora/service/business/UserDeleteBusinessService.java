@@ -18,18 +18,34 @@ public class UserDeleteBusinessService {
     @Autowired
     private UserDao userDao;
 
-
+    /**
+     * delete user wrt UUID
+     * @param signedInUser
+     * @param deleteUser
+     * @return
+     * @throws AuthorizationFailedException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public String deleteUserByUuid(final UserEntity signedInUser, final UserEntity deleteUser) throws AuthorizationFailedException {
+    public String deleteUserByUuid(final UserEntity signedInUser, final UserEntity deleteUser)
+            throws AuthorizationFailedException {
 
         if (!(signedInUser.getRole().equalsIgnoreCase("admin"))) {
-            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+            throw new AuthorizationFailedException(
+                    "ATHR-003", "Unauthorized Access, Entered user is not an admin"
+            );
         }
         return userDao.deleteUser(deleteUser);
     }
 
+    /**
+     * returns the UserAuthToken without checking for the role of Admin
+     * @param accessToken
+     * @return
+     * @throws AuthorizationFailedException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserAuthEntity getUserAuthEntityNoAdminCheck(String accessToken) throws AuthorizationFailedException {
+    public UserAuthEntity getUserAuthEntityNoAdminCheck(String accessToken)
+            throws AuthorizationFailedException {
         UserAuthEntity adminUAE = userDao.getUserAuthToken(accessToken);
 
         if (adminUAE == null) {
@@ -39,15 +55,24 @@ public class UserDeleteBusinessService {
         final ZonedDateTime now = ZonedDateTime.now();
 
         if (adminUAE.getLogoutAt() != null) {
-            if (now.compareTo(adminUAE.getLogoutAt()) >= 0 || now.compareTo(adminUAE.getExpiresAt()) > 0) {
-                throw new AuthorizationFailedException("ATHR-002", "User is signed out.Sign in first to get user details");
+            if (now.compareTo(adminUAE.getLogoutAt()) >= 0 ||
+                now.compareTo(adminUAE.getExpiresAt()) > 0) {
+                throw new AuthorizationFailedException(
+                        "ATHR-002", "User is signed out.Sign in first to get user details"
+                );
             }
         }
 
         return adminUAE;
     }
 
-
+    /**
+     * returns the userEntity for the provided access-token after the role check of admin
+     * @param accessToken
+     * @return
+     * @throws UserNotFoundException
+     * @throws AuthorizationFailedException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity getUserEntityByAdminCheck(String accessToken) throws UserNotFoundException,
             AuthorizationFailedException {
@@ -57,14 +82,25 @@ public class UserDeleteBusinessService {
         UserEntity adminUE = userDao.getUserByUuid(adminUAE.getUuid());
 
         if (!(adminUE.getRole().equalsIgnoreCase("admin"))) {
-            throw new AuthorizationFailedException("ATHR-003", "Unauthorized Access, Entered user is not an admin");
+            throw new AuthorizationFailedException(
+                    "ATHR-003", "Unauthorized Access, Entered user is not an admin"
+            );
         }
 
         return adminUE;
     }
 
+    /**
+     * retrieves the user to be deleted form the DB
+     * @param uuid
+     * @param adminAccessToken
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws UserNotFoundException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public UserEntity getUserToDelete(String uuid, String adminAccessToken) throws AuthorizationFailedException, UserNotFoundException {
+    public UserEntity getUserToDelete(String uuid, String adminAccessToken)
+            throws AuthorizationFailedException, UserNotFoundException {
 
         // check for the admin is logged-in
         UserEntity adminUE = this.getUserEntityByAdminCheck(adminAccessToken);
@@ -73,7 +109,9 @@ public class UserDeleteBusinessService {
         UserEntity toBeDeletedUserEntity = userDao.getUserByUuid(uuid);
 
         if (toBeDeletedUserEntity == null) {
-            throw new UserNotFoundException("USR-001", "User with entered uuid to be deleted does not exist");
+            throw new UserNotFoundException(
+                    "USR-001", "User with entered uuid to be deleted does not exist"
+            );
         }
 
         return toBeDeletedUserEntity;

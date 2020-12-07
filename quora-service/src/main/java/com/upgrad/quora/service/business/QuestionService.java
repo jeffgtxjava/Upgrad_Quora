@@ -80,7 +80,14 @@ public class QuestionService {
 
   }
 
-
+  /**
+   * to delete the question from the database
+   * @param questionToDelete
+   * @return
+   * @throws AuthorizationFailedException
+   * @throws InvalidQuestionException
+   * @throws DatabaseException
+   */
   @Transactional(propagation = Propagation.REQUIRED)
   public QuestionEntity deleteQuestion(final QuestionEntity questionToDelete)
       throws AuthorizationFailedException, InvalidQuestionException, DatabaseException {
@@ -101,6 +108,13 @@ public class QuestionService {
     return questionEntity;
   }
 
+  /**
+   * to retrieve the question from the DB
+   * @param questionUuid
+   * @return
+   * @throws InvalidQuestionException
+   * @throws DatabaseException
+   */
   @Transactional(propagation = Propagation.REQUIRED)
   public QuestionEntity getQuestion(final String questionUuid)
       throws InvalidQuestionException, DatabaseException {
@@ -113,10 +127,19 @@ public class QuestionService {
 
   }
 
-
+  /**
+   * to retrieve all the questions posted by given user UUID
+   * @param userEntity
+   * @return
+   * @throws AuthorizationFailedException
+   * @throws UserNotFoundException
+   * @throws DatabaseException
+   * @throws QuestionsNotFoundException
+   */
   @Transactional(propagation = Propagation.REQUIRED)
   public List<QuestionEntity> getAllQuestionsByUser(UserEntity userEntity)
-      throws AuthorizationFailedException, UserNotFoundException, DatabaseException, QuestionsNotFoundException {
+      throws AuthorizationFailedException, UserNotFoundException, DatabaseException,
+          QuestionsNotFoundException {
 
     List<QuestionEntity> questionEntityList = questionDao.getAllQuestionsByUser(userEntity);
 

@@ -54,7 +54,9 @@ public class QuestionController {
    * HTTP STATUS 201.
    * @throws AuthorizationFailedException
    */
-  @RequestMapping(method = RequestMethod.POST, path = "/question/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.POST, path = "/question/create",
+          consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<QuestionResponse> createQuestion(final QuestionRequest questionRequest,
       @RequestHeader("authorization") final String accessToken)
       throws AuthorizationFailedException, DatabaseException {
@@ -89,7 +91,8 @@ public class QuestionController {
    * @throws DatabaseException
    * @throws QuestionsNotFoundException
    */
-  @RequestMapping(method = RequestMethod.GET, path = "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.GET, path = "/question/all",
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions(
       @RequestHeader("authorization") final String accessToken)
       throws AuthorizationFailedException, DatabaseException, QuestionsNotFoundException {
@@ -101,8 +104,8 @@ public class QuestionController {
     List<QuestionDetailsResponse> displayQuestionIdAndContent = new ArrayList<>();
     for (QuestionEntity question : questionEntities) {
       QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse()
-          .id(question.getUuid()).
-              content(question.getContent());
+          .id(question.getUuid())
+          .content(question.getContent());
 
       displayQuestionIdAndContent.add(questionDetailsResponse);
     }
@@ -120,7 +123,8 @@ public class QuestionController {
    * @param questionUuid UUID of the question to be edited.
    * @param accessToken  JWT token.
    * @param editRequest  The new content of the question.
-   * @return
+   * @return ResponseEntity<QuestionEditResponse> quiestion UUID, status "QUESTION EDITED" and HTTP
+   * STATUS 200
    * @throws AuthorizationFailedException
    * @throws InvalidQuestionException
    * @throws DatabaseException
@@ -148,9 +152,13 @@ public class QuestionController {
   }
 
   /**
-   * @param questionUuid
-   * @param accessToken
-   * @return
+   * deletes the provided question UUID only if the accessToken is the owner of the question or
+   * the admin.
+   *
+   * @param questionUuid UUID of the question to be deleted
+   * @param accessToken logged in user's access-token
+   * @return ResponseEntity<QuestionDeleteResponse> UUID of deleted question, status "QUESTION
+   * DELETED" and HTTP STATUS 200
    * @throws AuthorizationFailedException
    * @throws InvalidQuestionException
    * @throws DatabaseException
@@ -178,19 +186,23 @@ public class QuestionController {
 
 
   /**
-   * @param accessToken
-   * @param userUuid
-   * @return
+   * retrieves all the questions of the provided User UUID
+   *
+   * @param accessToken logged in user's access-token
+   * @param userUuid UUID of all the question to be retrieved
+   * @return list of questions of the provided UUID
    * @throws AuthorizationFailedException
    * @throws UserNotFoundException
    * @throws DatabaseException
    * @throws QuestionsNotFoundException
    */
-  @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.GET, path = "question/all/{userId}",
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser(
       @RequestHeader("authorization") final String accessToken,
       @PathVariable("userId") final String userUuid)
-      throws AuthorizationFailedException, UserNotFoundException, DatabaseException, QuestionsNotFoundException {
+      throws AuthorizationFailedException, UserNotFoundException, DatabaseException,
+          QuestionsNotFoundException {
 
     authorizationService.validateJWTToken(accessToken);
 
@@ -201,8 +213,8 @@ public class QuestionController {
     List<QuestionDetailsResponse> displayUserQuestionIdAndContent = new ArrayList<>();
     for (QuestionEntity que : listOfUserQuestions) {
       QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse()
-          .id(que.getUuid()).
-              content(que.getContent());
+          .id(que.getUuid())
+          .content(que.getContent());
 
       displayUserQuestionIdAndContent.add(questionDetailsResponse);
     }

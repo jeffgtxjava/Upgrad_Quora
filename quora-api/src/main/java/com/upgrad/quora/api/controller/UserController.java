@@ -38,10 +38,18 @@ public class UserController {
   @Autowired
   private SignoutBusinessService signoutBusinessService;
 
-  // endpoint for signup
 
-  @RequestMapping(path = "/signup", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-      produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  /**
+   * end point for the signup
+   *
+   * @param signupUserRequest request will be sent from the client-end
+   * @return ResponseEntity<SignupUserResponse> UUID of the created user, status " USER
+   * SUCCESSFULLY REGISTERED" and HTTP STATUS 200
+   * @throws SignUpRestrictedException
+   */
+  @RequestMapping(path = "/signup", method = RequestMethod.POST,
+          consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<SignupUserResponse> signup(final SignupUserRequest signupUserRequest)
       throws SignUpRestrictedException {
 
@@ -70,7 +78,16 @@ public class UserController {
     return new ResponseEntity<SignupUserResponse>(userResponse, HttpStatus.CREATED);
   }
 
-  @RequestMapping(path = "/signin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  /**
+   * end point for the user to login
+   *
+   * @param authorization Basic username:password(encoded) will be sent form the client-side
+   * @return ResponseEntity<SigninResponse> UUID of thelogged user, status "SIGNED IN
+   * SUCCESSFULLY", access-token would be placed in the headers and HTTP STATUS 200
+   * @throws AuthenticationFailedException
+   */
+  @RequestMapping(path = "/signin", method = RequestMethod.POST,
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<SigninResponse> signin(@RequestHeader("authorization") String authorization)
       throws AuthenticationFailedException {
 
@@ -98,9 +115,15 @@ public class UserController {
     return new ResponseEntity<>(signinResponse, headers, HttpStatus.OK);
   }
 
-  //signout method
-
-  @RequestMapping(path = "/signout", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  /**
+   * endpoint for user signout with the access-token in the headers
+   * @param accessToken access-token of the logged in user
+   * @return ResponseEntity<SignoutResponse> UUID of the logged out user, status "SIGNED OUT
+   * SUCCESSFULLY" and HTTP STATUS 200
+   * @throws SignOutRestrictedException
+   */
+  @RequestMapping(path = "/signout", method = RequestMethod.POST,
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<SignoutResponse> signout(
       @RequestHeader("authorization") final String accessToken) throws SignOutRestrictedException {
 

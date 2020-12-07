@@ -132,7 +132,8 @@ public class AnswerController {
    * @throws AnswerNotFoundException
    * @throws AuthorizationFailedException
    */
-  @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.DELETE, path = "/answer/delete/{answerId}",
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<AnswerDeleteResponse> deleteAnswer(
       @RequestHeader("authorization") final String accessToken,
       @PathVariable("answerId") String answerUuid)
@@ -164,7 +165,8 @@ public class AnswerController {
    * @throws InvalidQuestionException
    * @throws AuthorizationFailedException
    */
-  @RequestMapping(method = RequestMethod.GET, path = "/answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  @RequestMapping(method = RequestMethod.GET, path = "/answer/all/{questionId}",
+          produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion(
       @RequestHeader("authorization") final String accessToken,
       @PathVariable("questionId") String questionUuid

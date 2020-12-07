@@ -18,6 +18,12 @@ public class UserAdminBusinessService {
     @Autowired
     private UserDao userDao;
 
+    /**
+     * to retrieve the user from the database
+     * @param userUuid
+     * @return
+     * @throws UserNotFoundException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public UserEntity getUser(final String userUuid)
           throws  UserNotFoundException {

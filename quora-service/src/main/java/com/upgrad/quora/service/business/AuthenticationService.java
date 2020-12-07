@@ -21,7 +21,14 @@ public class AuthenticationService {
   @Autowired
   private PasswordCryptographyProvider passwordCryptographyProvider;
 
-
+  /**
+   * authenticates the provided username and password from the database and returns the
+   * UserAuthToken which contatins the JWT generated
+   * @param username
+   * @param password
+   * @return userAuthToken having JWT
+   * @throws AuthenticationFailedException
+   */
   @Transactional(propagation = Propagation.REQUIRED)
   public UserAuthEntity authenticate(final String username, final String password)
       throws AuthenticationFailedException {
@@ -32,7 +39,8 @@ public class AuthenticationService {
       throw new AuthenticationFailedException("ATH-001", "This username does not exist");
     }
 
-    // compare the input password from the password in the DB if it doesn't exist throw passwords doesn't match
+    // compare the input password from the password in the DB if it doesn't exist throw passwords
+    // doesn't match
     final String encryptedPassword = passwordCryptographyProvider
         .encrypt(password, userEntity.getSalt());
 

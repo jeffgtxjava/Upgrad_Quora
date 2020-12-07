@@ -25,6 +25,15 @@ public class CommonController {
   @Autowired
   private AuthorizationService authorizationService;
 
+  /**
+   * returns the requested userProfile data only if the requesting user id logged in
+   *
+   * @param userUuid UUID of the user whose details need to be return
+   * @param accessToken access-token of the loggedin user
+   * @return ResponseEntity<UserDetailsResponse> provides the details of the requested user
+   * @throws AuthorizationFailedException
+   * @throws UserNotFoundException
+   */
   @RequestMapping(path = "/userprofile/{userId}", method = RequestMethod.GET, produces =
       MediaType.APPLICATION_JSON_UTF8_VALUE)
   public ResponseEntity<UserDetailsResponse> userProfile(
