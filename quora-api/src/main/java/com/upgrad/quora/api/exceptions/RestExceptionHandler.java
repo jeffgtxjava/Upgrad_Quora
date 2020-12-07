@@ -61,5 +61,18 @@ public class RestExceptionHandler {
         );
     }
 
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<ErrorResponse> databaseException(DatabaseException exe, WebRequest request) {
+        return new ResponseEntity<>(
+            new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()), HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    @ExceptionHandler(QuestionsNotFoundException.class)
+    public ResponseEntity<ErrorResponse> questionsNotFoundException(QuestionsNotFoundException exe, WebRequest request) {
+        return new ResponseEntity<>(
+            new ErrorResponse().code(exe.getCode()).message(exe.getErrorMessage()), HttpStatus.NOT_FOUND
+        );
+    }
 
 }

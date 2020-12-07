@@ -1,6 +1,7 @@
 package com.upgrad.quora.api.controller;
 
 import com.upgrad.quora.api.model.UserDetailsResponse;
+import com.upgrad.quora.service.business.AuthorizationService;
 import com.upgrad.quora.service.business.UserAdminBusinessService;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
@@ -9,32 +10,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CommonController {
 
-    @Autowired
-    private UserAdminBusinessService userAdminBusinessService;
+  @Autowired
+  private UserAdminBusinessService userAdminBusinessService;
 
-    @RequestMapping(path = "/userprofile/{userId}", method = RequestMethod.GET, produces =
-            MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UserDetailsResponse> getUserDetailByUuid(@PathVariable("userId") final String userUuid,
-                                                                   @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, UserNotFoundException {
+  @Autowired
+  private AuthorizationService authorizationService;
 
-        final UserEntity requestedUserEntity = userAdminBusinessService.getUser(userUuid, authorization);
+  @RequestMapping(path = "/userprofile/{userId}", method = RequestMethod.GET, produces =
+      MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public ResponseEntity<UserDetailsResponse> userProfile(
+      @PathVariable("userId") final String userUuid,
+      @RequestHeader("authorization") final String accessToken)
+      throws AuthorizationFailedException, UserNotFoundException {
 
-        UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+    authorizationService.validateJWTToken(accessToken);
 
-        userDetailsResponse.setFirstName(requestedUserEntity.getFirstName());
-        userDetailsResponse.setLastName((requestedUserEntity.getLastName()));
-        userDetailsResponse.setUserName(requestedUserEntity.getUserName());
-        userDetailsResponse.setEmailAddress(requestedUserEntity.getEmail());
-        userDetailsResponse.setDob(requestedUserEntity.getDob());
-        userDetailsResponse.setCountry(requestedUserEntity.getCountry());
-        userDetailsResponse.setContactNumber(requestedUserEntity.getContactNumber());
-        userDetailsResponse.setAboutMe(requestedUserEntity.getAboutMe());
+    final UserEntity requestedUserEntity = userAdminBusinessService
+        .getUser(userUuid);
 
-        return new ResponseEntity<>(userDetailsResponse, HttpStatus.OK);
-    }
+    UserDetailsResponse userDetailsResponse = new UserDetailsResponse();
+
+    userDetailsResponse.setFirstName(requestedUserEntity.getFirstName());
+    userDetailsResponse.setLastName((requestedUserEntity.getLastName()));
+    userDetailsResponse.setUserName(requestedUserEntity.getUserName());
+    userDetailsResponse.setEmailAddress(requestedUserEntity.getEmail());
+    userDetailsResponse.setDob(requestedUserEntity.getDob());
+    userDetailsResponse.setCountry(requestedUserEntity.getCountry());
+    userDetailsResponse.setContactNumber(requestedUserEntity.getContactNumber());
+    userDetailsResponse.setAboutMe(requestedUserEntity.getAboutMe());
+
+    return new ResponseEntity<>(userDetailsResponse, HttpStatus.OK);
+  }
 }

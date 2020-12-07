@@ -1,6 +1,6 @@
 package com.upgrad.quora.service.entity;
 
-
+import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -10,6 +10,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "users")
@@ -83,6 +85,10 @@ public class UserEntity implements Serializable {
     @Size(max = 30)
     private String contactNumber;
 
+    @OneToMany(mappedBy = "userEntity")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<QuestionEntity> questionEntityList;
+
     @Override
     public boolean equals(Object obj) {
         return new EqualsBuilder().append(this, obj).isEquals();
@@ -93,10 +99,10 @@ public class UserEntity implements Serializable {
         return new HashCodeBuilder().append(this).hashCode();
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
+    }*/
 
 
     public long getId() {
@@ -201,5 +207,14 @@ public class UserEntity implements Serializable {
 
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
+    }
+  
+    public List<QuestionEntity> getQuestionEntityList() {
+        return questionEntityList;
+    }
+
+    public void setQuestionEntityList(
+        List<QuestionEntity> questionEntityList) {
+        this.questionEntityList = questionEntityList;
     }
 }
