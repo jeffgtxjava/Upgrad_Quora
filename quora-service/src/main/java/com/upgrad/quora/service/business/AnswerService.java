@@ -41,7 +41,7 @@ public class AnswerService {
     AnswerEntity existingAnswerEntity = getAnswer(answerToEdit.getUuid());
     if (!existingAnswerEntity.getUserEntity().getUuid()
         .equals(answerToEdit.getUserEntity().getUuid())) {
-      throw new AuthorizationFailedException("ANS-003",
+      throw new AuthorizationFailedException("ATHR-003",
           "Only the answer owner can edit the answer");
     }
     existingAnswerEntity.setAnswer(answerToEdit.getAnswer());
@@ -78,7 +78,7 @@ public class AnswerService {
     if (!existingAnswerEntity.getUserEntity().getUuid()
         .equals(answerToDelete.getUserEntity().getUuid()) || answerToDelete.getUserEntity()
         .getRole().equals("admin")) {
-      throw new AuthorizationFailedException("ANS-003",
+      throw new AuthorizationFailedException("ATHR-003",
           "Only the answer owner or admin can delete the answer");
     }
     answerDAO.deleteAnswer(existingAnswerEntity);

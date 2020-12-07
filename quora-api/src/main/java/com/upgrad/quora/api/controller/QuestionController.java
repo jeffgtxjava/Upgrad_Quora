@@ -161,11 +161,11 @@ public class QuestionController {
       @RequestHeader("authorization") final String accessToken)
       throws AuthorizationFailedException, InvalidQuestionException, DatabaseException {
 
-    UserEntity userEntity = authorizationService.validateJWTToken(accessToken);
+    UserEntity loggedUserEntity = authorizationService.validateJWTToken(accessToken);
 
     final QuestionEntity questionToDelete = new QuestionEntity();
     questionToDelete.setUuid(questionUuid);
-    questionToDelete.setUserEntity(userEntity);
+    questionToDelete.setUserEntity(loggedUserEntity);
 
     final QuestionEntity deletedQuestion = questionService.deleteQuestion(questionToDelete);
 

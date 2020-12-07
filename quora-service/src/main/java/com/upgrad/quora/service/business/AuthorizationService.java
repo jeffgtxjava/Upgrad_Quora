@@ -38,12 +38,13 @@ public class AuthorizationService {
         throw new AuthorizationFailedException("ATHR-002",
             "User is signed out.Sign in first to get user details");
       }
-    } else {
-      if (now.compareTo(userAuthEntity.getExpiresAt()) > 0) {
-        throw new AuthorizationFailedException("ATHR-002",
-            "User is signed out.Sign in first to get user details");
-      }
     }
+//    else {
+//      if (now.compareTo(userAuthEntity.getExpiresAt()) > 0) {
+//        throw new AuthorizationFailedException("ATHR-002",
+//            "User is signed out.Sign in first to get user details");
+//      }
+//    }
 
     return userAuthEntity.getUserEntity();
   }

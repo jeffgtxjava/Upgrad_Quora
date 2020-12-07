@@ -89,7 +89,7 @@ public class QuestionService {
 
     String role = questionToDelete.getUserEntity().getRole();
     String questionOwnnerUuid = questionEntity.getUserEntity().getUuid();
-    String signedInUserUuid = questionEntity.getUserEntity().getUuid();
+    String signedInUserUuid = questionToDelete.getUserEntity().getUuid();
 
     if (role.equals("admin") || questionOwnnerUuid.equals(signedInUserUuid)) {
       questionDao.deleteQuestion(questionEntity);
