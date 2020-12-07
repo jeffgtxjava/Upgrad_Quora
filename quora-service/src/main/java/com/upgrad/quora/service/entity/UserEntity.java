@@ -1,6 +1,5 @@
 package com.upgrad.quora.service.entity;
 
-
 import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -209,7 +208,7 @@ public class UserEntity implements Serializable {
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }
-
+  
     public List<QuestionEntity> getQuestionEntityList() {
         return questionEntityList;
     }

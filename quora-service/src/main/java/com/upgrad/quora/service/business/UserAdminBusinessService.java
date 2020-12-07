@@ -27,8 +27,7 @@ public class UserAdminBusinessService {
         if (userEntity == null) {
             throw new UserNotFoundException("USR-001", "User with entered uuid does not exist");
         }
-
-        return userDao.getUserByUuid(userUuid);
+        return userEntity;
 
     }
 
